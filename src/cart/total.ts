@@ -23,5 +23,8 @@ function couponDiscount(coupon: Coupon, subtotalCents: number): number {
   if (coupon.type === 'percent') {
     return Math.round((subtotalCents * coupon.value) / 100);
   }
-  return coupon.value;
+  // Un cupón fijo nunca puede superar el subtotal: si vale más que la
+  // compra, el descuento se topa en el subtotal para no dejar el total
+  // en negativo (ver issue #1).
+  return Math.min(coupon.value, subtotalCents);
 }

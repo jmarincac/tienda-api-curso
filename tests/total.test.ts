@@ -48,6 +48,16 @@ describe('calculateTotals', () => {
     expect(totals).toEqual({ subtotalCents: 4200, discountCents: 500, totalCents: 3700 });
   });
 
+  it('limita el cupón fijo al subtotal: el total nunca es negativo', () => {
+    // Cupón fijo de 50 € sobre una compra de 42 €, issue #1
+    const totals = calculateTotals(
+      [{ unitPriceCents: 4200, quantity: 1 }],
+      coupon({ type: 'fixed', value: 5000 }),
+    );
+
+    expect(totals).toEqual({ subtotalCents: 4200, discountCents: 4200, totalCents: 0 });
+  });
+
   it('no descuenta nada si no se llega al pedido mínimo', () => {
     const totals = calculateTotals(
       [{ unitPriceCents: 1295, quantity: 1 }],

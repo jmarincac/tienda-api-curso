@@ -2,8 +2,19 @@ import type { Product } from '../db/schema.ts';
 import { AppError } from '../shared/errors.ts';
 import { findAllProducts, findProductById } from './repository.ts';
 
-export function listProducts(): Product[] {
-  return findAllProducts();
+/** Filtros opcionales del catálogo. Los que no se indican no se aplican. */
+export interface ProductFilters {
+  category?: string;
+  maxPriceCents?: number;
+}
+
+export function listProducts(filters: ProductFilters = {}): Product[] {
+  const { category, maxPriceCents } = filters;
+  return findAllProducts().filter(
+    (product) =>
+      (category === undefined || product.category === category) &&
+      (maxPriceCents === undefined || product.priceCents <= maxPriceCents),
+  );
 }
 
 export function getProduct(id: number): Product {
